@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Linq;
 using System.Web.UI;
 using Telerik.Sitefinity.Configuration;
-using Telerik.Sitefinity.Data;
-using Telerik.Sitefinity.Modules.Events;
 using Telerik.Sitefinity.Web.UI.Backend.Elements.Config;
 using Telerik.Sitefinity.Web.UI.Backend.Elements.Widgets;
 using Telerik.Sitefinity.Web.UI.ContentUI.Config;
@@ -14,9 +9,9 @@ using Telerik.Sitefinity.Web.UI.Fields.Config;
 
 namespace SitefinityWebApp.Configurations
 {
-    public class ConfigurationsHelper
+    internal class ConfigurationsHelper
     {
-        protected static T GetContentViewElement<T>(ConfigManager configManager, string contentViewControlName,
+        internal static T GetContentViewElement<T>(ConfigManager configManager, string contentViewControlName,
     string viewName, out ContentViewConfig config)
             where T : ContentViewDefinitionElement
         {
@@ -28,7 +23,7 @@ namespace SitefinityWebApp.Configurations
             return viewElement;
         }
 
-        protected static FieldDefinitionElement GetFieldElement(ContentViewDetailElement contentView, string sectionName, string fieldName)
+        internal static FieldDefinitionElement GetFieldElement(ContentViewDetailElement contentView, string sectionName, string fieldName)
         {
             var sectionElement = contentView.Sections[sectionName];
             var fieldElement = sectionElement.Fields[fieldName];
@@ -36,14 +31,27 @@ namespace SitefinityWebApp.Configurations
             return fieldElement;
         }
 
-        protected static WidgetBarSectionElement GetToolbarElement(MasterGridViewElement masterView)
+        internal static WidgetBarSectionElement GetToolbarElement(MasterGridViewElement masterView)
         {
             var toolbar = masterView.ToolbarConfig.Sections.Elements.Where(e => e.Name == "toolbar").First();
 
             return toolbar;
         }
 
-        public virtual void AddExtensionScript(MasterGridViewElement masterView,
+        internal static ConfigElementList<WidgetElement> GetActionsMenuItems(MasterGridViewElement masterView, string name)
+        {
+            // Grid or TreeTable
+            var gridElement = masterView.ViewModesConfig.Elements.FirstOrDefault(vm => vm.Name == name);
+
+            var gridModelElement = gridElement as GridViewModeElement;
+            var actionsLinkColumnList = gridModelElement.ColumnsConfig.Elements.FirstOrDefault(c => c.Name == "ActionsLinkText");
+            var actionsMenuElement = actionsLinkColumnList as ActionMenuColumnElement;
+
+            var commandList = actionsMenuElement.MenuItems;
+            return commandList;
+        }
+
+        internal static void AddExtensionScript(ContentViewMasterElement masterView,
             string scriptLocation, string loadMethodName,
             out bool needSave)
         {
@@ -64,11 +72,11 @@ namespace SitefinityWebApp.Configurations
             }
         }
 
-        protected virtual CommandWidgetElement CreateCommandWidgetElement(ActionMenuColumnElement parent,
+        internal static CommandWidgetElement CreateCommandWidgetElement(ConfigElement parent,
             string commandArgument, string commandName,
             string name, string text)
         {
-            var commandWidget = new CommandWidgetElement(parent.MenuItems);
+            var commandWidget = new CommandWidgetElement(parent);
             commandWidget.CommandArgument = commandArgument;
             commandWidget.CommandName = commandName;
             commandWidget.Name = name;
