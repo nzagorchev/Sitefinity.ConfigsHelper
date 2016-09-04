@@ -15,7 +15,7 @@ namespace SitefinityWebApp.Configurations
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-          //  InstallNewsExtensionScript();
+            InstallNewsExtensionScript();
             ModifyPressReleasesListViewToolbarCreateButton();
             //    InstallPagesCommandWidgets();
             ModifyRecurrencyFieldCssClass();
@@ -38,9 +38,10 @@ namespace SitefinityWebApp.Configurations
                 ConfigurationsHelper.AddExtensionScript(masterView, "~/News/NewsExtensionScript.js", "newsMasterViewLoadedExtended", out needSave);
                 if (needSave)
                 {
-                    configManager.SaveSection(config, true);
+                    configManager.SaveSection(masterView.Section, true);
                 }
             }
+            configManager.Dispose();
         }
 
         public static void ModifyPressReleasesListViewToolbarCreateButton()
@@ -63,7 +64,7 @@ namespace SitefinityWebApp.Configurations
                 //configManager.SaveSection(config, true);
                 configManager.SaveSection(createItem.Section, true);
             }
-            //configManager.Dispose();
+            configManager.Dispose();
         }
 
         public virtual void InstallPagesCommandWidgets()
@@ -133,11 +134,12 @@ namespace SitefinityWebApp.Configurations
 
                 var fieldElement = ConfigurationsHelper.GetFieldElement(detailView, sectionName, fieldName);
 
-                // Set as display none
-                fieldElement.CssClass += " sfDisplayNoneImportant dasdasd123123123131232131";
+                // Set additional CSS class
+                fieldElement.CssClass += " myClass";
 
-                configManager.SaveSection(fieldElement.Section, true);
+                configManager.SaveSection(fieldElement.Section);
             }
+            configManager.Dispose();
         }
     }
 }
